@@ -17,7 +17,9 @@
     <div id="navbarSupportedContent" class="navbar-collapse collapse">
       <div class="ms-auto d-flex align-items-center">
         <!-- is user is admin -->
-        <router-link to="#" class="text-white me-3"> 管理員後台 </router-link>
+        <router-link to="/admin" class="text-white me-3">
+          管理員後台
+        </router-link>
 
         <!-- is user is login -->
         <router-link to="#" class="text-white me-3"> 使用者 您好 </router-link>

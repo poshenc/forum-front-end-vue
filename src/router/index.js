@@ -29,9 +29,29 @@ const routes = [
     component: () => import('../views/AdminRestaurantNew.vue')
   },
   {
+    path: '/admin/restaurants/:id/edit',
+    name: 'admin-restaurant-edit',
+    component: () => import('../views/AdminRestaurantEdit.vue')
+  },
+  {
     path: '/admin/restaurants/:id',
     name: 'admin-restaurant',
     component: () => import('../views/AdminRestaurant.vue')
+  },
+  {
+    path: '/admin/categories',
+    name: 'admin-categories',
+    component: () => import('../views/AdminCategories.vue')
+  },
+  {
+    path: '/admin/users',
+    name: 'admin-users',
+    component: () => import('../views/AdminUsers.vue')
+  },
+  {
+    path: '/user/:id/edit',
+    name: 'user-edit',
+    component: () => import('../views/UserEdit.vue')
   },
   {
     path: '/signin',
