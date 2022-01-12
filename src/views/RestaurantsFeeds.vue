@@ -21,7 +21,10 @@
 <script>
 import NavTabs from "../components/NavTabs.vue";
 import NewestRestaurants from "../components/NewestRestaurants.vue";
-import NewestComments from "../components/NewestComments.vue"
+import NewestComments from "../components/NewestComments.vue";
+
+import feedsAPI from "./../apis/restaurants";
+import { Toast } from "./../utils/helpers";
 
 const dummyData = {
   restaurants: [
@@ -589,9 +592,22 @@ export default {
     this.fetchFeeds();
   },
   methods: {
-    fetchFeeds() {
-      this.restaurants = dummyData.restaurants;
-      this.comments = dummyData.comments.filter(comment => comment.Restaurant && comment.text);
+    async fetchFeeds() {
+      try {
+        const { data } = await feedsAPI.getFeeds();
+        if (data.status === "OK") {
+          throw new Error(data.error);
+        }
+        this.restaurants = data.restaurants;
+        this.comments = data.comments.filter(
+          (comment) => comment.Restaurant && comment.text
+        );
+      } catch (error) {
+        Toast.fire({
+          icon: "warning",
+          title: "無法取得Feeds資料，請稍後再試",
+        });
+      }
     },
   },
 };

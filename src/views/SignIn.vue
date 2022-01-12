@@ -34,15 +34,17 @@
         />
       </div>
 
-      <button class="btn btn-lg btn-primary btn-block mb-3" type="submit">
+      <button
+        class="btn btn-lg btn-primary btn-block mb-3"
+        type="submit"
+        :disabled="isProcessing"
+      >
         Submit
       </button>
 
       <div class="text-center mb-3">
         <p>
-          <router-link to="/signup">
-            Sign Up
-          </router-link>
+          <router-link to="/signup"> Sign Up </router-link>
         </p>
       </div>
 
@@ -52,22 +54,52 @@
 </template>
 
 <script>
+import authorizationAPI from "./../apis/authorization";
+import { Toast } from "./../utils/helpers";
+
 export default {
   data() {
     return {
       email: "",
       password: "",
+      isProcessing: false,
     };
   },
   methods: {
-    handleSubmit() {
-      const data = JSON.stringify({
-        email: this.email,
-        password: this.password,
-      });
+    async handleSubmit(e) {
+      try {
+        if (!this.email || !this.password) {
+          Toast.fire({
+            icon: "warning",
+            title: "請輸入 email 和 password",
+          });
+          return;
+        }
 
-      // TODO: 向後端驗證使用者登入資訊是否合法
-      console.log("data", data);
+        this.isProcessing = true;
+
+        const response = await authorizationAPI.signIn({
+          email: this.email,
+          password: this.password,
+        });
+
+        const { data } = response;
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        localStorage.setItem("token", data.token);
+        this.$router.push("/restaurants");
+      } catch (error) {
+        this.password = "";
+        this.isProcessing = false;
+
+        Toast.fire({
+          icon: "warning",
+          title: "請確認您輸入了正確的帳號密碼",
+        });
+      }
     },
   },
 };

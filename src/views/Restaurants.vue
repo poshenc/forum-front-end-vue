@@ -30,6 +30,9 @@ import RestaurantCard from "../components/RestaurantCard.vue";
 import RestaurantsNavPills from "../components/RestaurantsNavPills.vue";
 import RestaurantsPagination from "../components/RestaurantsPagination.vue";
 
+import restaurantsAPI from "./../apis/restaurants";
+import { Toast } from "./../utils/helpers";
+
 const dummyData = {
   restaurants: [
     {
@@ -324,26 +327,47 @@ export default {
     };
   },
   created() {
-    this.fetchRestaurants();
+    const { page = "", categoryId = "" } = this.$route.query;
+    this.fetchRestaurants({
+      queryPage: page,
+      queryCategoryId: categoryId,
+    });
+  },
+  beforeRouteUpdate(to, form, next) {
+    const { page = "", categoryId = "" } = to.query;
+    this.fetchRestaurants({ queryPage: page, queryCategoryId: categoryId });
+    next();
   },
   methods: {
-    fetchRestaurants() {
-      const {
-        restaurants,
-        categories,
-        categoryId,
-        page,
-        totalPage,
-        prev,
-        next,
-      } = dummyData;
-      this.restaurants = restaurants;
-      this.categories = categories;
-      this.categoryId = categoryId;
-      this.currentPage = page;
-      this.totalPage = totalPage;
-      this.previousPage = prev;
-      this.nextPage = next;
+    async fetchRestaurants({ queryPage, queryCategoryId }) {
+      try {
+        const response = await restaurantsAPI.getRestaurants({
+          page: queryPage,
+          categoryId: queryCategoryId,
+        });
+
+        const {
+          restaurants,
+          categories,
+          categoryId,
+          page,
+          totalPage,
+          prev,
+          next,
+        } = response.data;
+        this.restaurants = restaurants;
+        this.categories = categories;
+        this.categoryId = categoryId;
+        this.currentPage = page;
+        this.totalPage = totalPage;
+        this.previousPage = prev;
+        this.nextPage = next;
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得餐廳資料，請稍後再試",
+        });
+      }
     },
   },
 };
