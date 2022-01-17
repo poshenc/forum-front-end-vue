@@ -16,7 +16,7 @@
     <div class="form-group">
       <label for="categoryId">Category</label>
       <select
-        v-model="restaurant.id"
+        v-model="restaurant.categoryId"
         id="categoryId"
         class="form-control"
         name="categoryId"
@@ -151,12 +151,12 @@ export default {
     };
   },
   watch: {
-    initialRestaurant (newValue) {
+    initialRestaurant(newValue) {
       this.restaurant = {
         ...this.restaurant,
-        ...newValue
-      }
-    }
+        ...newValue,
+      };
+    },
   },
   methods: {
     async fetchCategories() {

@@ -1,7 +1,10 @@
 <template>
   <div class="container py-5">
     <!-- 餐廳表單 AdminRestaurantForm -->
-    <AdminRestaurantForm @after-submit="handleAfterSubmit" :is-processing="isProcessing"/>
+    <AdminRestaurantForm
+      @after-submit="handleAfterSubmit"
+      :is-processing="isProcessing"
+    />
   </div>
 </template>
 
@@ -16,15 +19,16 @@ export default {
   components: {
     AdminRestaurantForm,
   },
-  data () {
+  data() {
     return {
-      isProcessing: false
-    }
+      isProcessing: false,
+    };
   },
   methods: {
     async handleAfterSubmit(formData) {
       try {
-        this.isProcessing = true
+        console.log(formData);
+        this.isProcessing = true;
         const { data } = await adminAPI.restaurants.create({
           formData,
         });
@@ -37,7 +41,7 @@ export default {
 
         this.$router.push({ name: "admin-restaurants" });
       } catch (error) {
-        this.isProcessing = false
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: "無法建立餐廳，請稍後再試",
