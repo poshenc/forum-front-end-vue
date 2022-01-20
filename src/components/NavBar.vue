@@ -17,19 +17,40 @@
     <div id="navbarSupportedContent" class="navbar-collapse collapse">
       <div class="ms-auto d-flex align-items-center">
         <!-- is user is admin -->
-        <router-link to="/admin" class="text-white me-3">
+        <router-link
+          to="/admin"
+          class="text-white me-3"
+          v-if="currentUser.isAdmin"
+        >
           管理員後台
         </router-link>
 
         <!-- is user is login -->
-        <router-link to="#" class="text-white me-3"> 使用者 您好 </router-link>
-        <button
-          type="button"
-          class="btn btn-sm btn-outline-success my-2 my-sm-0"
-        >
-          登出
-        </button>
+        <template v-if="isAuthenticated">
+          <router-link
+            :to="{ name: 'user', params: { id: currentUser.id } }"
+            class="text-white me-3"
+          >
+            {{ currentUser.name || "使用者" }} 您好
+          </router-link>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-success my-2 my-sm-0"
+          >
+            登出
+          </button>
+        </template>
       </div>
     </div>
   </nav>
 </template>
+
+<script>
+import { mapState } from "vuex";
+
+export default {
+  computed: {
+    ...mapState(["currentUser", "isAuthenticated"]),
+  },
+};
+</script>
