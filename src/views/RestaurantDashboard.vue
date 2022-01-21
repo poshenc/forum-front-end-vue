@@ -3,14 +3,14 @@
     <div>
       <h1>{{ restaurant.name }}</h1>
       <span class="badge bg-secondary mt-1 mb-3">
-        {{ restaurant.Category.name }}
+        {{ restaurant.categoryName }}
       </span>
     </div>
 
     <hr />
 
     <ul>
-      <li>評論數： {{ restaurant.Comments.length }}</li>
+      <li>評論數： {{ restaurant.commentsLength }}</li>
       <li>瀏覽次數： {{ restaurant.viewCounts }}</li>
     </ul>
 
@@ -21,94 +21,52 @@
 </template>
 
 <script>
-const dummyData = {
-  restaurant: {
-    id: 1,
-    name: "Dillon O'Kon",
-    tel: "985.192.0659",
-    address: "7080 Sven Trace",
-    opening_hours: "08:00",
-    description: "magnam non in",
-    image:
-      "https://loremflickr.com/320/240/restaurant,food/?random=81.6043306048576",
-    viewCounts: 0,
-    createdAt: "2021-12-16T09:42:57.000Z",
-    updatedAt: "2021-12-16T09:42:57.000Z",
-    CategoryId: 1,
-    Category: {
-      id: 1,
-      name: "中式料理",
-      createdAt: "2021-12-16T09:42:57.000Z",
-      updatedAt: "2021-12-16T09:42:57.000Z",
-    },
-    Comments: [
-      {
-        id: 1,
-        text: "Sed eveniet fugiat doloribus est facilis reprehenderit earum harum facere.",
-        UserId: 3,
-        RestaurantId: 1,
-        createdAt: "2021-12-16T09:42:57.000Z",
-        updatedAt: "2021-12-16T09:42:57.000Z",
-        User: {
-          id: 3,
-          name: "user2",
-          email: "user2@example.com",
-          password:
-            "$2a$10$MWqCXMkd6skfZbzLFPC0I.MsEoG7xiP2aBo5ObSJVk6v4XvopVDG.",
-          isAdmin: false,
-          image: null,
-          createdAt: "2021-12-16T09:42:57.000Z",
-          updatedAt: "2021-12-16T09:42:57.000Z",
-        },
-      },
-      {
-        id: 51,
-        text: "Et tempore quae sint.",
-        UserId: 3,
-        RestaurantId: 1,
-        createdAt: "2021-12-16T09:42:57.000Z",
-        updatedAt: "2021-12-16T09:42:57.000Z",
-        User: {
-          id: 3,
-          name: "user2",
-          email: "user2@example.com",
-          password:
-            "$2a$10$MWqCXMkd6skfZbzLFPC0I.MsEoG7xiP2aBo5ObSJVk6v4XvopVDG.",
-          isAdmin: false,
-          image: null,
-          createdAt: "2021-12-16T09:42:57.000Z",
-          updatedAt: "2021-12-16T09:42:57.000Z",
-        },
-      },
-      {
-        id: 101,
-        text: "Laudantium perferendis similique debitis aut ducimus fuga.",
-        UserId: 3,
-        RestaurantId: 1,
-        createdAt: "2021-12-16T09:42:57.000Z",
-        updatedAt: "2021-12-16T09:42:57.000Z",
-        User: {
-          id: 3,
-          name: "user2",
-          email: "user2@example.com",
-          password:
-            "$2a$10$MWqCXMkd6skfZbzLFPC0I.MsEoG7xiP2aBo5ObSJVk6v4XvopVDG.",
-          isAdmin: false,
-          image: null,
-          createdAt: "2021-12-16T09:42:57.000Z",
-          updatedAt: "2021-12-16T09:42:57.000Z",
-        },
-      },
-    ],
-  },
-};
+import restaurantsAPI from "./../apis/restaurants";
+import { Toast } from "./../utils/helpers";
 
 export default {
   name: "RestaurantDashbaord",
   data() {
     return {
-      restaurant: dummyData.restaurant,
+      restaurant: {
+        id: -1,
+        name: "",
+        categoryName: "",
+        commentsLength: 0,
+        viewCounts: 0,
+      },
     };
+  },
+  created() {
+    const { id: restaurantId } = this.$route.params;
+    this.fetchRestaurant(restaurantId);
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { id: restaurantId } = to.params;
+    this.fetchRestaurant(restaurantId);
+    next();
+  },
+  methods: {
+    async fetchRestaurant(restaurantId) {
+      try {
+        const { data } = await restaurantsAPI.getRestaurant({ restaurantId });
+        const { id, name, Category, Comments, viewCounts } = data.restaurant;
+        this.restaurant = {
+          ...this.restaurant,
+          id,
+          name,
+          categoryName: Category ? Category.name : "未分類",
+          commentsLength: Comments.length,
+          viewCounts,
+        };
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "暫時無法載入餐廳資料，請稍後再試！",
+        });
+      }
+    },
   },
 };
 </script>

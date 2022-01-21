@@ -23,6 +23,7 @@ import RestaurantComments from "../components/RestaurantComments.vue";
 import CreateComment from "../components/CreateComment.vue";
 
 import restaurantsAPI from "./../apis/restaurants";
+import commentsAPI from "./../apis/comments";
 import { Toast } from "./../utils/helpers";
 
 import { mapState } from "vuex";
@@ -104,23 +105,37 @@ export default {
         });
       }
     },
-    afterDeleteComment(commentId) {
-      this.restaurantComments = this.restaurantComments.filter(
-        (comment) => comment.id !== commentId
-      );
+    async afterDeleteComment(commentId) {
+      try {
+        this.restaurantComments = this.restaurantComments.filter(
+          (comment) => comment.id !== commentId
+        );
+      } catch (error) {
+        console.log(error);
+      }
     },
-    afterCreateComment(payload) {
-      const { commentId, restuarantId, text } = payload;
-      this.restaurantComments.push({
-        id: commentId,
-        RestaurantId: restuarantId,
-        User: {
-          id: this.currentUser.id,
-          name: this.currentUser.name,
-        },
-        text,
-        createdAt: new Date(),
-      });
+    async afterCreateComment(payload) {
+      try {
+        const { commentId, restaurantId, text } = payload;
+        const { data } = await commentsAPI.create({ restaurantId, text });
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.restaurantComments.push({
+          id: commentId,
+          RestaurantId: restaurantId,
+          User: {
+            id: this.currentUser.id,
+            name: this.currentUser.name,
+          },
+          text,
+          createdAt: new Date(),
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };
