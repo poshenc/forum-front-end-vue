@@ -34,48 +34,70 @@
         />
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn btn-primary" :disabled="isProcessing">
+        Submit
+      </button>
     </form>
   </div>
 </template>
 
 <script>
-const dummyUser = {
-  currentUser: {
-    id: 2,
-    name: "User ABC",
-    email: "abc@example.com",
-    image: "https://i.pravatar.cc/300",
-    isAdmin: false,
-  },
-  isAuthenticated: true,
-};
+import usersAPI from "./../apis/users";
+import { Toast } from "./../utils/helpers";
+import { mapState } from "vuex";
 
 export default {
+  name: "UserEdit",
   data() {
     return {
       user: {
         id: -1,
         name: "",
         image: "",
+        email: "",
       },
+      isProcessing: false,
     };
   },
+  computed: {
+    ...mapState(["currentUser"]),
+  },
+  watch: {
+    currentUser(newValue) {
+      if (newValue.id === -1) return;
+      const { id } = this.$route.params;
+      this.setUser(id);
+    },
+  },
   created() {
+    if (this.currentUser.id === -1) return;
     const { id } = this.$route.params;
-    this.fetchUser(id);
+    this.setUser(id);
+  },
+  beforeRouteUpdate(to, from, next) {
+    if (this.currentUser.id === -1) return;
+    const { id } = to.params;
+    this.setUser(id);
+    next();
   },
   methods: {
-    fetchUser(userId) {
-      console.log("fetchUser id:", userId);
-      const { id, name, image } = dummyUser.currentUser;
+    setUser(userId) {
+      const { id, name, image, email } = this.currentUser;
+
+      if (id.toString() !== userId.toString()) {
+        this.$router.push({ name: "not-found" });
+        return;
+      }
+
       this.user = {
         ...this.user,
         id,
         name,
         image,
+        email,
       };
     },
+
     handleFileChange(e) {
       const { files } = e.target;
       if (files.length === 0) {
@@ -85,12 +107,39 @@ export default {
         this.user.image = imageURL;
       }
     },
-    handleSubmit(e) {
-      const form = e.target; //<form></form>
-      const formData = new FormData(form);
-      //準備 API 傳送到後端伺服器
-      for (let [name, value] of formData.entries()) {
-        console.log(name + ":" + value);
+    async handleSubmit(e) {
+      try {
+        if (!this.user.name) {
+          Toast.fire({
+            icon: "error",
+            title: "漏填姓名！",
+          });
+          return;
+        }
+        const form = e.target; //<form></form>
+        const formData = new FormData(form);
+        // for (let [name, value] of formData.entries()) {
+        //   console.log(name + ":" + value);
+        // }
+
+        this.isProcessing = true;
+        const { data } = await usersAPI.update({
+          userId: this.user.id,
+          formData,
+        });
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.$router.push({ name: "user", params: { id: this.user.id } });
+      } catch (error) {
+        this.isProcessing = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "暫時無法更新使用者資料，請稍後再試！",
+        });
       }
     },
   },
