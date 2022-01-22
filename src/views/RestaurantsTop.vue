@@ -1,6 +1,8 @@
 <template>
   <div class="container py-5">
     <NavTabs />
+    <Spinner v-if="isLoading" />
+    <template>
     <h1 class="mt-5">人氣餐廳</h1>
 
     <hr />
@@ -53,6 +55,7 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -62,16 +65,19 @@ import NavTabs from "../components/NavTabs.vue";
 import restaurants from "./../apis/restaurants";
 import restaurantsAPI from "./../apis/restaurants";
 import usersAPI from "./../apis/users";
+import Spinner from "./../components/Spinner.vue";
 import { Toast } from "./../utils/helpers";
 
 export default {
   name: "RestaurantsTop",
   components: {
     NavTabs,
+    Spinner,
   },
   data() {
     return {
       restaurants: [],
+      isLoading: true,
     };
   },
   created() {
@@ -82,7 +88,9 @@ export default {
       try {
         const { data } = await restaurantsAPI.getTopRestaurants();
         this.restaurants = data.restaurants;
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error);
         Toast.fire({
           icon: "error",
