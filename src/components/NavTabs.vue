@@ -1,5 +1,5 @@
 <template>
-  <ul class="nav nav-tabs mb-4">
+  <ul class="nav nav-bar nav-tabs mb-4">
     <li v-for="tab in tabs" :key="tab.id" class="nav-item">
       <router-link :to="tab.path" class="nav-link">
         {{ tab.title }}
@@ -40,3 +40,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.nav-link {
+  color: #bd2333;
+}
+.nav-tabs {
+  border-bottom: 1px solid #bd2333;
+}
+.nav-tabs .nav-link:focus,
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  border-color: #bd2333;
+  background-color: #bd2333;
+  color: white;
+}
+</style>
