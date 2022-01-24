@@ -39,7 +39,7 @@
         type="submit"
         :disabled="isProcessing"
       >
-        Submit
+        {{ isProcessing ? "Processing..." : "Submit" }}
       </button>
 
       <div class="text-center mb-3">
@@ -91,7 +91,7 @@ export default {
 
         localStorage.setItem("token", data.token);
 
-        this.$store.commit('setCurrentUser', data.user)
+        this.$store.commit("setCurrentUser", data.user);
 
         this.$router.push("/restaurants");
       } catch (error) {
