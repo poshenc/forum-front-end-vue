@@ -1,6 +1,5 @@
 <template>
   <div class="container py-5">
-    <h1>單一 USER 頁</h1>
     <!-- UserProfileCard -->
     <UserProfileCard
       :user="user"
@@ -38,7 +37,7 @@ import UserFavoritedRestaurantsCard from "../components/UserFavoritedRestaurants
 import usersAPI from "./../apis/users";
 import { Toast } from "./../utils/helpers";
 
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
   name: "User",
@@ -76,9 +75,9 @@ export default {
     this.fetchUser(userId);
   },
   beforeRouteUpdate(to, from, next) {
-    const { id: userId } = to.params
-    this.fetchUser(userId)
-    next()
+    const { id: userId } = to.params;
+    this.fetchUser(userId);
+    next();
   },
   methods: {
     async fetchUser(userId) {
