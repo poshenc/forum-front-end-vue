@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
-    <router-link class="navbar-brand" to="/"> 餐廳評論網 </router-link>
+    <router-link class="navbar-brand" to="/"> 餐廳評論網2 </router-link>
 
     <button
       class="navbar-toggler"
@@ -64,18 +64,18 @@ export default {
 </script>
 
 <style scoped>
-  .navbar-toggler {
-    min-width: 70px;
-    margin-right: 0;
-  }
+.navbar-toggler {
+  min-width: 70px;
+  margin-right: 0;
+}
 
-  nav.bg-dark {
-    padding: 14px 16px;
-    background-color: #bd2333 !important;
-  }
+nav.bg-dark {
+  padding: 14px 16px;
+  background-color: #bd2333 !important;
+}
 
-  .navbar-brand {
-    font-size: 19px;
-    padding: 0;
+.navbar-brand {
+  font-size: 19px;
+  padding: 0;
 }
 </style>
